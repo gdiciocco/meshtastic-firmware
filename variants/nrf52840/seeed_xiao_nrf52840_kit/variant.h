@@ -4,6 +4,8 @@
 /** Master clock frequency */
 #define VARIANT_MCK (64000000ul)
 
+#undef L76k_GPS // free D6 and D7 for i2c if not using GPS
+
 #define USE_LFXO // Board uses 32khz crystal for LF
 // #define USE_LFRC    // Board uses RC for LF
 
