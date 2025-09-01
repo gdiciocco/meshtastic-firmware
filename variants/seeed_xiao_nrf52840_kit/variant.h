@@ -1,6 +1,8 @@
 #ifndef _SEEED_XIAO_NRF52840_KIT_H_
 #define _SEEED_XIAO_NRF52840_KIT_H_
 
+#undef GPS_L76K // free D6 and D7 for i2c if not using GPS
+
 /** Master clock frequency */
 #define VARIANT_MCK (64000000ul)
 
