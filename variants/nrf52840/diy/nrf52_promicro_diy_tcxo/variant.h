@@ -54,7 +54,7 @@ NRF52 PRO MICRO PIN ASSIGNMENT
 #define PIN_3V3_EN (0 + 13) // P0.13
 
 // Analog pins
-#define BATTERY_PIN (0 + 31) // P0.31 Battery ADC
+#define BATTERY_PIN (0 + 4) // P0.31 Battery ADC
 #define ADC_CHANNEL ADC1_GPIO4_CHANNEL
 #define ADC_RESOLUTION 14
 #define BATTERY_SENSE_RESOLUTION_BITS 12
@@ -76,8 +76,8 @@ NRF52 PRO MICRO PIN ASSIGNMENT
 // WIRE IC AND IIC PINS
 #define WIRE_INTERFACES_COUNT 1
 
-#define PIN_WIRE_SDA (32 + 4) // P1.04
-#define PIN_WIRE_SCL (0 + 11) // P0.11
+#define PIN_WIRE_SDA (32) // P1.04
+#define PIN_WIRE_SCL (11) // P0.11
 
 // LED
 #define PIN_LED1 (0 + 15) // P0.15
@@ -87,13 +87,14 @@ NRF52 PRO MICRO PIN ASSIGNMENT
 #define LED_STATE_ON 1 // State when LED is lit
 
 // Button
-#define BUTTON_PIN (32 + 0) // P1.00
+#define BUTTON_PIN (0) // P1.00
 
 // GPS
-#define PIN_GPS_TX (0 + 22) // P0.22
-#define PIN_GPS_RX (0 + 20) // P0.20
 
-#define PIN_GPS_EN (0 + 24) // P0.24
+#define PIN_GPS_TX (-1) // P0.22
+#define PIN_GPS_RX (-1) // P0.20
+
+#define PIN_GPS_EN (-1) // P0.24
 #define GPS_POWER_TOGGLE
 #define GPS_UBLOX
 // define GPS_DEBUG
@@ -102,38 +103,54 @@ NRF52 PRO MICRO PIN ASSIGNMENT
 #define PIN_SERIAL1_RX PIN_GPS_TX
 #define PIN_SERIAL1_TX PIN_GPS_RX
 
-#define PIN_SERIAL2_RX (0 + 6) // P0.06
-#define PIN_SERIAL2_TX (0 + 8) // P0.08
+#define PIN_SERIAL2_RX (-1) // P0.06
+#define PIN_SERIAL2_TX (-1) // P0.08
+
 
 // Serial interfaces
 #define SPI_INTERFACES_COUNT 1
 
-#define PIN_SPI_MISO (0 + 2)   // P0.02
-#define PIN_SPI_MOSI (32 + 15) // P1.15
-#define PIN_SPI_SCK (32 + 11)  // P1.11
+#define PIN_SPI_MISO (32 + 6)   // P0.02
+#define PIN_SPI_MOSI (9) // P1.15
+#define PIN_SPI_SCK (32 + 4)  // P1.11
 
 #define LORA_MISO PIN_SPI_MISO
 #define LORA_MOSI PIN_SPI_MOSI
 #define LORA_SCK PIN_SPI_SCK
-#define LORA_CS (32 + 13) // P1.13
+#define LORA_CS (22) // P1.13
 
 // LORA MODULES
-#define USE_LLCC68
 #define USE_SX1262
+
+/*
+#define USE_LLCC68
 #define USE_RF95
 #define USE_SX1268
 #define USE_LR1121
+*/
 
 // RF95 CONFIG
 
 #define LORA_DIO0 (0 + 29) // P0.29 BUSY
-#define LORA_DIO1 (0 + 10) // P0.10 IRQ
-#define LORA_RESET (0 + 9) // P0.09 NRST
+#define LORA_DIO1 (6) // P0.10 IRQ
+#define LORA_RESET (17) // P0.09 NRST
 
 // RX/TX for RFM95/SX127x
-#define RF95_RXEN (0 + 17)    // P0.17
+#define RF95_RXEN (24)    // P0.17
 #define RF95_TXEN RADIOLIB_NC // Assuming that DIO2 is connected to TXEN pin. If not, TXEN must be connected.
 
+
+// SX126X CONFIG
+#define SX126X_CS (22)      // P1.13 FIXME - we really should define LORA_CS instead
+#define SX126X_DIO1 (6)     // P0.10 IRQ
+#define SX126X_DIO2_AS_RF_SWITCH // Note for E22 modules: DIO2 is not attached internally to TXEN for automatic TX/RX switching,
+                                 // so it needs connecting externally if it is used in this way
+#define SX126X_BUSY (20)     // P0.29
+#define SX126X_RESET (17)     // P0.09
+#define SX126X_RXEN (24)     // P0.17
+#define SX126X_TXEN RADIOLIB_NC  // Assuming that DIO2 is connected to TXEN pin. If not, TXEN must be connected.
+#define SX126X_DIO3_TCXO_VOLTAGE 1.8 // TCXO voltage
+/*
 // SX126X CONFIG
 #define SX126X_CS (32 + 13)      // P1.13 FIXME - we really should define LORA_CS instead
 #define SX126X_DIO1 (0 + 10)     // P0.10 IRQ
@@ -143,6 +160,16 @@ NRF52 PRO MICRO PIN ASSIGNMENT
 #define SX126X_RESET (0 + 9)     // P0.09
 #define SX126X_RXEN (0 + 17)     // P0.17
 #define SX126X_TXEN RADIOLIB_NC  // Assuming that DIO2 is connected to TXEN pin. If not, TXEN must be connected.
+
+// Wio-SX1262 for XIAO (standalone SKU 113010003 or nRF52840 kit SKU 102010710)
+    // https://files.seeedstudio.com/products/SenseCAP/Wio_SX1262/Wio-SX1262%20for%20XIAO%20V1.0_SCH.pdf
+    #define SX126X_CS D4
+    #define SX126X_DIO1 D1
+    #define SX126X_BUSY D3
+    #define SX126X_RESET D2
+    #define SX126X_RXEN D5
+*/
+
 
 // LR1121
 #ifdef USE_LR1121
@@ -183,7 +210,7 @@ settings.
 */
 
 #define SX126X_DIO3_TCXO_VOLTAGE 1.8
-#define TCXO_OPTIONAL // make it so that the firmware can try both TCXO and XTAL
+//#define TCXO_OPTIONAL // make it so that the firmware can try both TCXO and XTAL
 
 // E-Ink DIY
 #define PIN_EINK_CS (32 + 7)
