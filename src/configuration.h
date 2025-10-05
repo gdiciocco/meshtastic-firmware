@@ -179,7 +179,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define PMSA0031_ADDR 0x12
 #define QMA6100P_ADDR 0x12
 #define AHT10_ADDR 0x38
-#define RCWL9620_ADDR 0x57
+#define RCWL9620_ADDR 0x00
 #define VEML7700_ADDR 0x10
 #define TSL25911_ADDR 0x29
 #define OPT3001_ADDR 0x45
@@ -198,7 +198,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // -----------------------------------------------------------------------------
 // ACCELEROMETER
 // -----------------------------------------------------------------------------
-#define MPU6050_ADDR 0x68
+#define MPU6050_ADDR 0x00
 #define STK8BXX_ADDR 0x18
 #define LIS3DH_ADDR 0x18
 #define LIS3DH_ADDR_ALT 0x19
@@ -206,7 +206,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define LSM6DS3_ADDR 0x6A
 #define BMX160_ADDR 0x69
 #define ICM20948_ADDR 0x69
-#define ICM20948_ADDR_ALT 0x68
+#define ICM20948_ADDR_ALT 0x01
+#define DS3231_ADDR 0x68
+#define DS3231_EEPROM_ADDR 0x57
 
 // -----------------------------------------------------------------------------
 // LED

@@ -616,11 +616,6 @@ void RadioInterface::limitPower()
         power = maxPower;
     }
 
-    if (TX_GAIN_LORA > 0) {
-        LOG_INFO("Requested Tx power: %d dBm; Device LoRa Tx gain: %d dB", power, TX_GAIN_LORA);
-        power -= TX_GAIN_LORA;
-    }
-
     LOG_INFO("Final Tx power: %d dBm", power);
 }
 
