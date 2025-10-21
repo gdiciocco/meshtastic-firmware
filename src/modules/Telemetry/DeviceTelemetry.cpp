@@ -19,6 +19,11 @@
 int32_t DeviceTelemetryModule::runOnce()
 {
     refreshUptime();
+    auto now = millis();
+    if (now > 345600000000ULL)
+        rebootAtMsec = millis() + 60000; // Reboot in 60 seconds if we've been up for 4 days
+    //if (now > 300000) 
+    //    rebootAtMsec = millis() + 10000; // Reboot in 10 seconds if we've been up for 5 minutes    
     bool isImpoliteRole =
         IS_ONE_OF(config.device.role, meshtastic_Config_DeviceConfig_Role_SENSOR, meshtastic_Config_DeviceConfig_Role_ROUTER);
     if (((lastSentToMesh == 0) ||
