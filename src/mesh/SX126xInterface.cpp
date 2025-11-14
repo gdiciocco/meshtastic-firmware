@@ -94,6 +94,9 @@ template <typename T> bool SX126xInterface<T>::init()
     LOG_INFO("Bandwidth set to %f", bw);
     LOG_INFO("Power output set to %d", power);
 
+    uint8_t paRamp = lora.setPaRampTime(200);
+    LOG_INFO("PA Ramp time set to %d", paRamp);
+
     // Overriding current limit
     // (https://github.com/jgromes/RadioLib/blob/690a050ebb46e6097c5d00c371e961c1caa3b52e/src/modules/SX126x/SX126x.cpp#L85) using
     // value in SX126xInterface.h (currently 140 mA) It may or may not be necessary, depending on how RadioLib functions, from
