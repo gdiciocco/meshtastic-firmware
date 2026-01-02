@@ -140,7 +140,7 @@ NRF52 PRO MICRO PIN ASSIGNMENT
 #define SX126X_CS (32 + 0)      // P1.13 FIXME - we really should define LORA_CS instead
 #define SX126X_DIO1 (0 + 6)     // P0.10 IRQ
 //#define SX126X_DIO2 (0 + 31)    // P0.02 AS RF SWITCH
-//#define SX126X_DIO2_AS_RF_SWITCH // Note for E22 modules: DIO2 is not attached internally to TXEN for automatic TX/RX switching,
+#define SX126X_DIO2_AS_RF_SWITCH // Note for E22 modules: DIO2 is not attached internally to TXEN for automatic TX/RX switching,
                                  // so it needs connecting externally if it is used in this way
 #define SX126X_BUSY (0 + 8)     // P0.29
 #define SX126X_RESET (0 + 17)     // P0.09
