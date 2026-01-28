@@ -30,8 +30,8 @@ NRF52 PRO MICRO PIN ASSIGNMENT
 | Gnd   |             |     | reset    |              |       |
 | Gnd   |             |     | ext_vcc  | *see 0.13    |       |
 | P0.17 | RXEN        |     | P0.31    | BATTERY_PIN  |       |
-| P0.20 | GPS_RX      |     | P0.29    | BUSY         | DIO0  |
-| P0.22 | GPS_TX      |     | P0.02    | MISO         | MISO  |
+| P0.20 | GPS_TX      |     | P0.29    | BUSY         | DIO0  |
+| P0.22 | GPS_RX      |     | P0.02    | MISO         | MISO  |
 | P0.24 | GPS_EN      |     | P1.15    | MOSI         | MOSI  |
 | P1.00 | BUTTON_PIN  |     | P1.13    | CS           | CS    |
 | P0.11 | SCL         |     | P1.11    | SCK          | SCK   |
@@ -105,8 +105,8 @@ NRF52 PRO MICRO PIN ASSIGNMENT
 // define GPS_DEBUG
 
 // UART interfaces
-#define PIN_SERIAL1_RX PIN_GPS_TX
-#define PIN_SERIAL1_TX PIN_GPS_RX
+#define PIN_SERIAL1_TX GPS_TX_PIN
+#define PIN_SERIAL1_RX GPS_RX_PIN
 
 #define PIN_SERIAL2_RX (-1) // P0.06
 #define PIN_SERIAL2_TX (-1) // P0.08
@@ -168,6 +168,7 @@ settings.
 | Waveshare    | Core1262-HF      | yes  | Ext       |                                       |
 | Waveshare    | LoRa Node Module | yes  | Int       |                                       |
 | Seeed        | Wio-SX1262       | yes  | Ext       | Cute! DIO2/TXEN are not exposed       |
+| Seeed        | Wio-LR1121       | yes  | Int       | LR1121, needs alternate rfswitch.h    |
 | AI-Thinker   | RA-02            | No   | Int       | SX1278 **433mhz band only**           |
 | RF Solutions | RFM95            | No   | Int       | Untested                              |
 | Ebyte        | E80-900M2213S    | Yes  | Int       | LR1121 radio                          |
