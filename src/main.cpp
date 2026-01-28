@@ -1,3 +1,4 @@
+#include "ds3231.h"
 #include "configuration.h"
 #if !MESHTASTIC_EXCLUDE_GPS
 #include "GPS.h"
@@ -556,6 +557,8 @@ void setup()
     }
 #elif HAS_WIRE
     Wire.begin();
+    delay(500);   // Wait for things to stabilize
+    ds3231_set_alarm_in_24h();
 #endif
 #endif
 

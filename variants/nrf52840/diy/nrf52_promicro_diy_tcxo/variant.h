@@ -54,30 +54,36 @@ NRF52 PRO MICRO PIN ASSIGNMENT
 #define PIN_3V3_EN (0 + 13) // P0.13
 
 // Analog pins
-#define BATTERY_PIN (32 + 4) // P0.31 Battery ADC
+#define BATTERY_PIN (0 + 31) // P0.31 Battery ADC
 #define ADC_CHANNEL ADC1_GPIO4_CHANNEL
 #define ADC_RESOLUTION 14
 #define BATTERY_SENSE_RESOLUTION_BITS 12
 #define BATTERY_SENSE_RESOLUTION 4096.0
-// Definition of milliVolt per LSB => 3.0V ADC range and 12-bit ADC resolution = 3000mV/4096
+
+// Voltage divider: 470kΩ + 470kΩ (equal resistors)
+// Vout = Vin * (R2 / (R1 + R2)) = Vin * 0.5
+#define VBAT_DIVIDER (0.5F)
+
+// ADC voltage per LSB with 3.0V reference and 12-bit resolution
 #define VBAT_MV_PER_LSB (0.73242188F)
-// Voltage divider value => 1.5M + 1M voltage divider on VBAT = (1.5M / (1M + 1.5M))
-#define VBAT_DIVIDER (0.6F)
-// Compensation factor for the VBAT divider
-#define VBAT_DIVIDER_COMP (1.73)
-// Fixed calculation of milliVolt from compensation value
+
+// Compensation factor: inverse of divider ratio
+#define VBAT_DIVIDER_COMP (2.0F)
+
+// Real milliVolt per LSB accounting for voltage divider
 #define REAL_VBAT_MV_PER_LSB (VBAT_DIVIDER_COMP * VBAT_MV_PER_LSB)
+
 #undef AREF_VOLTAGE
 #define AREF_VOLTAGE 3.0
 #define VBAT_AR_INTERNAL AR_INTERNAL_3_0
-#define ADC_MULTIPLIER VBAT_DIVIDER_COMP // REAL_VBAT_MV_PER_LSB
+#define ADC_MULTIPLIER VBAT_DIVIDER_COMP
 #define VBAT_RAW_TO_SCALED(x) (REAL_VBAT_MV_PER_LSB * x)
 
 // WIRE IC AND IIC PINS
 #define WIRE_INTERFACES_COUNT 1
 
-#define PIN_WIRE_SDA (0 + 9) // P1.04
-#define PIN_WIRE_SCL (1 + 06) // P0.11
+#define PIN_WIRE_SDA (0 + 10) // P1.04
+#define PIN_WIRE_SCL (0 + 9) // P0.11
 
 // LED
 #define PIN_LED1 (0 + 15) // P0.15
@@ -94,8 +100,8 @@ NRF52 PRO MICRO PIN ASSIGNMENT
 #define PIN_GPS_RX (-1) // P0.20
 
 #define PIN_GPS_EN (-1) // P0.24
-#define GPS_POWER_TOGGLE
-#define GPS_UBLOX
+//#define GPS_POWER_TOGGLE
+//#define GPS_UBLOX
 // define GPS_DEBUG
 
 // UART interfaces
@@ -124,18 +130,7 @@ NRF52 PRO MICRO PIN ASSIGNMENT
 //#define USE_SX1268
 //#define USE_LR1121
 
-// RF95 CONFIG
-#ifdef USE_RF95
-
-#define LORA_DIO0 (0 + 8) // P0.29 BUSY
 #define LORA_DIO1 (0 + 6) // P0.10 IRQ
-#define LORA_RESET (0 + 17) // P0.09 NRST
-
-// RX/TX for RFM95/SX127x
-#define RF95_RXEN (0 + 17)    // P0.17
-#define RF95_TXEN RADIOLIB_NC // Assuming that DIO2 is connected to TXEN pin. If not, TXEN must be connected.
-#endif
-
 // SX126X CONFIG
 #define SX126X_CS (32 + 0)      // P1.13 FIXME - we really should define LORA_CS instead
 #define SX126X_DIO1 (0 + 6)     // P0.10 IRQ
@@ -144,25 +139,15 @@ NRF52 PRO MICRO PIN ASSIGNMENT
                                  // so it needs connecting externally if it is used in this way
 #define SX126X_BUSY (0 + 8)     // P0.29
 #define SX126X_RESET (0 + 17)     // P0.09
-#define SX126X_RXEN (0 + 2)     // P0.17
-#define SX126X_TXEN (0 + 29)  // Assuming that DIO2 is connected to TXEN pin. If not, TXEN must be connected.
+#define SX126X_TXEN RADIOLIB_NC
+#define SX126X_RXEN RADIOLIB_NC
 
-#define TCXO_OPTIONAL
-#define SX126X_DIO3_TCXO_VOLTAGE 1.7
+#define SX126X_POWER_EN (0 + 2) // P0.29
+
+//#define TCXO_OPTIONAL
+#define SX126X_DIO3_TCXO_VOLTAGE 1.8
 
 
-// LR1121
-#ifdef USE_LR1121
-#define LR1121_IRQ_PIN (0 + 10)      // P0.10 IRQ
-#define LR1121_NRESET_PIN LORA_RESET // P0.09 NRST
-#define LR1121_BUSY_PIN (0 + 29)     // P0.29 BUSY
-#define LR1121_SPI_NSS_PIN LORA_CS   // P1.13
-#define LR1121_SPI_SCK_PIN LORA_SCK
-#define LR1121_SPI_MOSI_PIN LORA_MOSI
-#define LR1121_SPI_MISO_PIN LORA_MISO
-#define LR11X0_DIO3_TCXO_VOLTAGE 1.8
-#define LR11X0_DIO_AS_RF_SWITCH
-#endif
 
 // #define SX126X_MAX_POWER 8 set this if using a high-power board!
 
