@@ -96,17 +96,17 @@ NRF52 PRO MICRO PIN ASSIGNMENT
 #define BUTTON_PIN (-1) // P1.00
 
 // GPS
-#define PIN_GPS_TX (-1) // P0.22
-#define PIN_GPS_RX (-1) // P0.20
+//#define GPS_TX_PIN (-1) // P0.22
+//#define GPS_RX_PIN (-1) // P0.20
 
-#define PIN_GPS_EN (-1) // P0.24
+//#define PIN_GPS_EN (-1) // P0.24
 //#define GPS_POWER_TOGGLE
 //#define GPS_UBLOX
 // define GPS_DEBUG
 
 // UART interfaces
-#define PIN_SERIAL1_TX GPS_TX_PIN
-#define PIN_SERIAL1_RX GPS_RX_PIN
+#define PIN_SERIAL1_TX (-1)
+#define PIN_SERIAL1_RX (-1)
 
 #define PIN_SERIAL2_RX (-1) // P0.06
 #define PIN_SERIAL2_TX (-1) // P0.08
@@ -132,8 +132,8 @@ NRF52 PRO MICRO PIN ASSIGNMENT
 
 #define LORA_DIO1 (0 + 6) // P0.10 IRQ
 // SX126X CONFIG
-#define SX126X_CS (32 + 0)      // P1.13 FIXME - we really should define LORA_CS instead
-#define SX126X_DIO1 (0 + 6)     // P0.10 IRQ
+#define SX126X_CS LORA_CS      // P1.13 FIXME - we really should define LORA_CS instead
+#define SX126X_DIO1 LORA_DIO1     // P0.10 IRQ
 //#define SX126X_DIO2 (0 + 31)    // P0.02 AS RF SWITCH
 #define SX126X_DIO2_AS_RF_SWITCH // Note for E22 modules: DIO2 is not attached internally to TXEN for automatic TX/RX switching,
                                  // so it needs connecting externally if it is used in this way
