@@ -86,7 +86,7 @@ ScanI2C::DeviceType ScanI2CTwoWire::probeOLED(ScanI2C::DeviceAddress addr) const
     return o_probe;
 }
 uint16_t ScanI2CTwoWire::getRegisterValue(const ScanI2CTwoWire::RegisterLocation &registerLocation,
-                                          ScanI2CTwoWire::ResponseWidth responseWidth, bool zeropad = false) const
+                                          ScanI2CTwoWire::ResponseWidth responseWidth, bool zeropad) const
 {
     uint16_t value = 0x00;
     TwoWire *i2cBus = fetchI2CBus(registerLocation.i2cAddress);
@@ -720,6 +720,12 @@ void ScanI2CTwoWire::scanPort(I2CPort port, uint8_t *address, uint8_t asize)
                     logFoundDevice("BMX160", (uint8_t)addr.address);
                     break;
                 } else {
+					registerValue = getRegisterValue(ScanI2CTwoWire::RegisterLocation(addr, 0x75), 1); // WHO_AM_I
+					if (registerValue == 0x60) {
+						type = ICM42607P;
+						logFoundDevice("ICM-42607-P", (uint8_t)addr.address);
+						break;
+					}
 #if HAS_TELEMETRY && !MESHTASTIC_EXCLUDE_AIR_QUALITY_SENSOR
                     String prod = "";
                     prod = readSEN5xProductName(i2cBus, addr.address);

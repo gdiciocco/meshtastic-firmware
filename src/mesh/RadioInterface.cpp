@@ -33,6 +33,8 @@
 #include "STM32WLE5JCInterface.h"
 #endif
 
+Observable<uint32_t> RadioInterface::loraRxPacketObservable;
+
 static const meshtastic_Config_LoRaConfig_ModemPreset PRESETS_STD[] = {
     meshtastic_Config_LoRaConfig_ModemPreset_LONG_FAST,     meshtastic_Config_LoRaConfig_ModemPreset_LONG_SLOW,
     meshtastic_Config_LoRaConfig_ModemPreset_MEDIUM_SLOW,   meshtastic_Config_LoRaConfig_ModemPreset_MEDIUM_FAST,
