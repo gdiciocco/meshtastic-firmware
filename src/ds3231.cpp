@@ -2,13 +2,15 @@
 
 #define DS3231_ADDRESS 0x68
 static RTC_DS3231 rtc;
+static constexpr uint32_t FALLBACK_REBOOT_DELAY_SECONDS = 4UL * 24 * 60 * 60 + 5 * 60;
 
-static byte decToBcd(byte val) {
+static byte decToBcd(byte val)
+{
     return ((val / 10 * 16) + (val % 10));
 }
 
-// reset flag allarmi
-static void resetAlarms() {
+static void resetAlarms()
+{
     Wire.beginTransmission(DS3231_ADDRESS);
     Wire.write(0x0F);  // registro Status
     Wire.endTransmission();
@@ -24,8 +26,8 @@ static void resetAlarms() {
     Wire.endTransmission();
 }
 
-// imposta Alarm1 su data/ora
-static void setAlarm1(DateTime dt) {
+static void setAlarm1(DateTime dt)
+{
     Wire.beginTransmission(DS3231_ADDRESS);
     Wire.write(0x07); // primo registro di Alarm1
 
@@ -35,14 +37,13 @@ static void setAlarm1(DateTime dt) {
     Wire.write(decToBcd(dt.day())    & 0x7F); // giorno del mese
     Wire.endTransmission();
 
-    // abilito Alarm1 (A1IE=1)
     Wire.beginTransmission(DS3231_ADDRESS);
     Wire.write(0x0E); // registro Control
     Wire.endTransmission();
 
     Wire.requestFrom(DS3231_ADDRESS, 1);
     byte ctrl = Wire.read();
-    ctrl |= 0b00000001;
+    ctrl |= 0b00000101; // INTCN and Alarm1 interrupt enable
 
     Wire.beginTransmission(DS3231_ADDRESS);
     Wire.write(0x0E);
@@ -50,7 +51,8 @@ static void setAlarm1(DateTime dt) {
     Wire.endTransmission();
 }
 
-void ds3231_set_alarm_in_24h() {
+void ds3231ScheduleFallbackReboot()
+{
     if (!rtc.begin()) {
         Serial.println("Errore: DS3231 non trovato!");
         return;
@@ -60,7 +62,7 @@ void ds3231_set_alarm_in_24h() {
 
     resetAlarms();
 
-    DateTime newAlarm = now + TimeSpan(4, 0, 0, 0);
+    DateTime newAlarm = now + TimeSpan(FALLBACK_REBOOT_DELAY_SECONDS);
     Serial.println(newAlarm.timestamp());
 
     setAlarm1(newAlarm);

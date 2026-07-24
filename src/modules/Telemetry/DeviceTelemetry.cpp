@@ -7,6 +7,7 @@
 #include "RTC.h"
 #include "RadioLibInterface.h"
 #include "Router.h"
+#include "Throttle.h"
 #include "TransmitHistory.h"
 #include "configuration.h"
 #include "main.h"
@@ -17,16 +18,18 @@
 
 #define MAGIC_USB_BATTERY_LEVEL 101
 static constexpr uint16_t TX_HISTORY_KEY_DEVICE_TELEMETRY = 0x8001;
+static constexpr uint32_t SAFE_REBOOT_UPTIME_MS = 4UL * 24 * 60 * 60 * 1000;
+static constexpr uint32_t SAFE_REBOOT_DELAY_MS = 60UL * 1000;
 
 int32_t DeviceTelemetryModule::runOnce()
 {
 
     refreshUptime();
-    auto now = millis();
-    if (now > 345599700000ULL)
-        rebootAtMsec = millis() + 60000; // Reboot in 60 seconds if we've been up for 4 days -5min 
-    //if (now > 300000) 
-    //    rebootAtMsec = millis() + 10000; // Reboot in 10 seconds if we've been up for 5 minutes    
+    if (rebootAtMsec == 0 && !Throttle::isWithinTimespanMs(0, SAFE_REBOOT_UPTIME_MS)) {
+        LOG_WARN("Four-day uptime reached, scheduling a safe reboot");
+        rebootAtMsec = uptimeLastMs + SAFE_REBOOT_DELAY_MS;
+    }
+
     uint32_t lastTelemetry = transmitHistory ? transmitHistory->getLastSentToMeshMillis(TX_HISTORY_KEY_DEVICE_TELEMETRY) : 0;
     bool isImpoliteRole = isSensorOrRouterRole();
     if (((lastTelemetry == 0) ||

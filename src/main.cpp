@@ -1,5 +1,7 @@
-#include "ds3231.h"
 #include "configuration.h"
+#ifdef HAS_DS3231_WATCHDOG
+#include "ds3231.h"
+#endif
 #if !MESHTASTIC_EXCLUDE_GPS
 #include "GPS.h"
 #endif
@@ -500,8 +502,11 @@ void setup()
     }
 #elif HAS_WIRE
     Wire.begin();
-    delay(500);   // Wait for things to stabilize
-    ds3231_set_alarm_in_24h();
+#endif
+
+#ifdef HAS_DS3231_WATCHDOG
+    delay(500);
+    ds3231ScheduleFallbackReboot();
 #endif
 #endif
 

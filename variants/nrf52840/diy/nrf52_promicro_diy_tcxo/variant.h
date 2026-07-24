@@ -8,6 +8,7 @@
 #define USE_LFRC // Board uses RC for LF
 
 #define PROMICRO_DIY_TCXO
+#define HAS_DS3231_WATCHDOG
 
 /*----------------------------------------------------------------------------
  *        Headers

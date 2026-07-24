@@ -1,11 +1,7 @@
-#ifndef DS3231_HELPER_H
-#define DS3231_HELPER_H
+#pragma once
 
 #include <Arduino.h>
-#include <Wire.h>
 #include "RTClib.h"
+#include <Wire.h>
 
-// inizializza DS3231 e programma un allarme tra 24h
-void ds3231_set_alarm_in_24h();
-
-#endif
+void ds3231ScheduleFallbackReboot();
