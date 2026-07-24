@@ -208,6 +208,25 @@ static const uint8_t SCK = PIN_SPI_SCK;
 
 #define BATTERY_SENSE_RESOLUTION_BITS (10)
 
+// Solar/unattended operation: stop at 3.4V instead of 3.1V.
+// The last OCV point is the "0%" voltage and is what Power.cpp uses to trigger the low battery deep sleep.
+// Shutting down at 3.4V leaves enough charge in the cell to boot again on the next sunny day, instead of
+// draining it to a level where the node can no longer restart on its own.
+#define OCV_ARRAY 4190, 4050, 3990, 3890, 3800, 3720, 3630, 3530, 3480, 3440, 3400
+
+// Wake from System OFF when the battery recovers (LPCOMP).
+// BATTERY_PIN is D32 -> P0.31, which is AIN7 on the nRF52840.
+#define BATTERY_LPCOMP_INPUT NRF_LPCOMP_INPUT_7
+// LPCOMP compares the input against a fraction of VDD, so the fraction has to be picked against the
+// divider ratio of this board: R17=1M / R18=510k => V_AIN7 = VBAT * 0.338 (ADC_MULTIPLIER 3).
+// With VDD = 3.3V and 3/8: V_AIN7 threshold = 1.24V -> VBAT = 1.24 / 0.338 = 3.66V.
+// The fraction (0.375) must also stay above the divider ratio (0.338): while the supply is collapsing VDD
+// tracks VBAT, so V_AIN7 stays below the reference and no spurious rising edge can be detected. The wake
+// event can only happen once VDD is back at 3.3V and VBAT has actually climbed back to ~3.7V.
+// Note: main-nrf52.cpp calls battery_adcEnable() before starting LPCOMP, so ADC_CTRL (P0.14) keeps the
+// divider connected during System OFF (GPIO state is retained), costing ~2.4uA.
+#define BATTERY_LPCOMP_THRESHOLD NRF_LPCOMP_REF_SUPPLY_3_8
+
 /*
  * Wire Interfaces
  * Keep this section after potentially conflicting pin definitions

@@ -80,6 +80,27 @@ NRF52 PRO MICRO PIN ASSIGNMENT
 #define ADC_MULTIPLIER VBAT_DIVIDER_COMP
 #define VBAT_RAW_TO_SCALED(x) (REAL_VBAT_MV_PER_LSB * x)
 
+// Solar/unattended operation: stop at 3.4V instead of 3.1V.
+// The last OCV point is the "0%" voltage and is what Power.cpp uses to trigger the low battery deep sleep.
+// Shutting down at 3.4V keeps the LDO out of dropout and leaves enough charge in the cell to boot again
+// on the next sunny day, instead of collapsing into a brownout loop the node cannot recover from.
+#define OCV_ARRAY 4190, 4050, 3990, 3890, 3800, 3720, 3630, 3530, 3480, 3440, 3400
+
+// Wake from System OFF when the battery recovers (LPCOMP).
+// BATTERY_PIN is P0.31 (the pin map of this variant is 1:1 with the nRF52840 port/pin numbering),
+// and P0.31 is AIN7 on the nRF52840.
+#define BATTERY_LPCOMP_INPUT NRF_LPCOMP_INPUT_7
+// LPCOMP compares the input against a fraction of VDD, so the fraction has to be picked against the
+// divider ratio of this board: 470k/470k => V_AIN7 = VBAT * 0.5 (ADC_MULTIPLIER 2.0).
+// With VDD = 3.3V, VBAT at the rising edge = (fraction * 3.3V) / 0.5:
+//   4/8  = 0.5000 -> equal to the divider ratio, the crossing is undefined (discarded)
+//   9/16 = 0.5625 -> V_AIN7 = 1.86V -> VBAT = 3.71V (chosen: the panel has recharged a usable amount)
+//   5/8  = 0.6250 -> V_AIN7 = 2.06V -> VBAT = 4.13V (discarded: only wakes on an almost full cell)
+// The fraction must also stay above the divider ratio: while the regulator is in dropout VDD tracks VBAT,
+// so V_AIN7 (0.5 * VBAT) stays below the reference and no spurious rising edge can be detected. The wake
+// event can only happen once VDD is regulated at 3.3V again and VBAT has actually climbed back to ~3.7V.
+#define BATTERY_LPCOMP_THRESHOLD NRF_LPCOMP_REF_SUPPLY_9_16
+
 // WIRE IC AND IIC PINS
 #define WIRE_INTERFACES_COUNT 1
 

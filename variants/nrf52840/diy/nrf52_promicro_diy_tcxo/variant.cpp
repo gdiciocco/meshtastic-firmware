@@ -39,7 +39,9 @@ void initVariant()
 
 void variant_shutdown()
 {
+#if defined(BUTTON_PIN) && BUTTON_PIN >= 0
     nrf_gpio_cfg_input(BUTTON_PIN, NRF_GPIO_PIN_PULLUP); // Enable internal pull-up on the button pin
     nrf_gpio_pin_sense_t sense = NRF_GPIO_PIN_SENSE_LOW; // Configure SENSE signal on low edge
     nrf_gpio_cfg_sense_set(BUTTON_PIN, sense);           // Apply SENSE to wake up the device from the deep sleep
+#endif
 }

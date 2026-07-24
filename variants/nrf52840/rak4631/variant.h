@@ -266,14 +266,20 @@ SO GPIO 39/TXEN MAY NOT BE DEFINED FOR SUCCESSFUL OPERATION OF THE SX1262 - TG
 #define VBAT_AR_INTERNAL AR_INTERNAL_3_0
 #define ADC_MULTIPLIER 1.73
 
+// Solar/unattended operation: stop at 3.4V instead of 3.1V.
+// The last OCV point is the "0%" voltage and is what Power.cpp uses to trigger the low battery deep sleep.
+// Shutting down at 3.4V leaves enough charge in the cell for the LPCOMP wake-up below to be useful,
+// instead of draining it to a level where the node can no longer restart on its own.
+#define OCV_ARRAY 4190, 4050, 3990, 3890, 3800, 3720, 3630, 3530, 3480, 3440, 3400
+
 // RAK4630 AIN0 = nrf52840 AIN3 = Pin 5
 #define BATTERY_LPCOMP_INPUT NRF_LPCOMP_INPUT_3
 
 // We have AIN3 with a VBAT divider so AIN3 = VBAT * (1.5/2.5)
-// We have the device going deep sleep under 3.1V, which is AIN3 = 1.86V
+// We have the device going deep sleep under 3.4V (see OCV_ARRAY above), which is AIN3 = 2.04V
 // So we can wake up when VBAT>=VDD is restored to 3.3V, where AIN3 = 1.98V
 // 1.98/3.3 = 6/10, but that's close to the VBAT divider, so we
-// pick 6/8VDD, which means VBAT=4.1V.
+// pick 11/16VDD, which means VBAT=3.76V.
 // Reference:
 // VDD=3.3V AIN3=5/8*VDD=2.06V VBAT=1.66*AIN3=3.41V
 // VDD=3.3V AIN3=11/16*VDD=2.26V VBAT=1.66*AIN3=3.76V
