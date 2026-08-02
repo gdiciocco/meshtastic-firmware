@@ -125,7 +125,6 @@ Will be used for broadcast.
 int32_t NeighborInfoModule::runOnce()
 {
     if (moduleConfig.neighbor_info.transmit_over_lora &&
-        (!RadioInterface::uses_default_frequency_slot) &&
         airTime->isTxAllowedChannelUtil(true) && airTime->isTxAllowedAirUtil()) {
         sendNeighborInfo(NODENUM_BROADCAST, false);
     } else {
