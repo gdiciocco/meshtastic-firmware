@@ -65,6 +65,11 @@ ScanI2C::FoundDevice ScanI2C::find(ScanI2C::DeviceType) const
     return DEVICE_NONE;
 }
 
+std::vector<ScanI2C::FoundDevice> ScanI2C::findAll(ScanI2C::DeviceType) const
+{
+    return {};
+}
+
 bool ScanI2C::exists(ScanI2C::DeviceType) const
 {
     return false;

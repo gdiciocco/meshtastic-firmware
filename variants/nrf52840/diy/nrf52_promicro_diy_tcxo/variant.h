@@ -40,7 +40,7 @@ NRF52 PRO MICRO PIN ASSIGNMENT
 | P1.06 | Free pin    |     | P0.09    | RESET        | RST   |
 |       |             |     |          |              |       |
 |       | Mid board   |     |          | Internal     |       |
-| P1.01 | Free pin    |     | 0.15     | LED          |       |
+| P1.01 | SOLAR_EN    |     | 0.15     | LED          |       |
 | P1.02 | Free pin    |     | 0.13     | 3V3_EN       |       |
 | P1.07 | Free pin    |     |          |              |       |
 */
@@ -100,6 +100,29 @@ NRF52 PRO MICRO PIN ASSIGNMENT
 // so V_AIN7 (0.5 * VBAT) stays below the reference and no spurious rising edge can be detected. The wake
 // event can only happen once VDD is regulated at 3.3V again and VBAT has actually climbed back to ~3.7V.
 #define BATTERY_LPCOMP_THRESHOLD NRF_LPCOMP_REF_SUPPLY_9_16
+
+// Solar charge controller
+#define HAS_SOLAR_CHARGE_CONTROL 1
+#define SOLAR_CHARGE_CONTROL_PIN (32 + 1) // P1.01
+#define SOLAR_CHARGE_CONTROL_ON HIGH
+#define SOLAR_CHARGE_CONTROL_OFF LOW
+#define SOLAR_INA219_ADDRESS 0x41
+#define SOLAR_BMP280_ADDRESS 0x76
+
+#define SOLAR_CHARGE_START_MIN_TEMP_C 5.0F
+#define SOLAR_CHARGE_STOP_MIN_TEMP_C 2.0F
+#define SOLAR_CHARGE_START_MAX_TEMP_C 40.0F
+#define SOLAR_CHARGE_STOP_MAX_TEMP_C 43.0F
+
+#define SOLAR_PANEL_START_MV 5200
+#define SOLAR_PANEL_STOP_MV 4800
+#define SOLAR_PANEL_START_SAMPLES 3
+#define SOLAR_PANEL_STOP_SAMPLES 3
+#define SOLAR_PANEL_PROBE_DELAY_MS 1000
+#define SOLAR_CHARGING_CHECK_INTERVAL_MS 15000
+#define SOLAR_WAIT_SUN_INTERVAL_MS 60000
+#define SOLAR_WAIT_TEMPERATURE_INTERVAL_MS 300000
+#define SOLAR_SENSOR_RETRY_INTERVAL_MS 60000
 
 // WIRE IC AND IIC PINS
 #define WIRE_INTERFACES_COUNT 1

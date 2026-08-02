@@ -33,8 +33,11 @@ extern RTC_NOINIT_ATTR uint64_t RTC_reg_b;
 #if __has_include(<Adafruit_INA219.h>)
 #include "modules/Telemetry/Sensor/INA219Sensor.h"
 extern INA219Sensor ina219Sensor;
+extern INA219Sensor ina219Sensor2;
+INA219Sensor *getINA219SensorByAddress(uint8_t address);
 #else
 extern NullSensor ina219Sensor;
+extern NullSensor ina219Sensor2;
 #endif
 
 #if __has_include(<INA226.h>)

@@ -95,8 +95,19 @@ static const uint8_t ext_chrg_detect_value = EXT_CHRG_DETECT_VALUE;
 #if HAS_TELEMETRY && !MESHTASTIC_EXCLUDE_ENVIRONMENTAL_SENSOR
 #if __has_include(<Adafruit_INA219.h>)
 INA219Sensor ina219Sensor;
+INA219Sensor ina219Sensor2(2);
+
+INA219Sensor *getINA219SensorByAddress(uint8_t address)
+{
+    if (ina219Sensor.getAddress() == address)
+        return &ina219Sensor;
+    if (ina219Sensor2.getAddress() == address)
+        return &ina219Sensor2;
+    return nullptr;
+}
 #else
 NullSensor ina219Sensor;
+NullSensor ina219Sensor2;
 #endif
 
 #if __has_include(<INA226.h>)
@@ -553,12 +564,25 @@ class AnalogBatteryLevel : public HasBatteryLevel
 #endif
 
 #if HAS_TELEMETRY && !MESHTASTIC_EXCLUDE_ENVIRONMENTAL_SENSOR
+#if __has_include(<Adafruit_INA219.h>)
+    INA219Sensor *getBatteryINA219()
+    {
+        return getINA219SensorByAddress(config.power.device_battery_ina_address);
+    }
+#endif
+
     uint16_t getINAVoltage()
     {
+#if __has_include(<Adafruit_INA219.h>)
+        if (auto *sensor = getBatteryINA219()) {
+            return sensor->getBusVoltageMv();
+        }
+#else
         if (nodeTelemetrySensorsMap[meshtastic_TelemetrySensorType_INA219].first == config.power.device_battery_ina_address) {
             return ina219Sensor.getBusVoltageMv();
-        } else if (nodeTelemetrySensorsMap[meshtastic_TelemetrySensorType_INA226].first ==
-                   config.power.device_battery_ina_address) {
+        }
+#endif
+        if (nodeTelemetrySensorsMap[meshtastic_TelemetrySensorType_INA226].first == config.power.device_battery_ina_address) {
             return ina226Sensor.getBusVoltageMv();
         } else if (nodeTelemetrySensorsMap[meshtastic_TelemetrySensorType_INA260].first ==
                    config.power.device_battery_ina_address) {
@@ -572,10 +596,16 @@ class AnalogBatteryLevel : public HasBatteryLevel
 
     int16_t getINACurrent()
     {
+#if __has_include(<Adafruit_INA219.h>)
+        if (auto *sensor = getBatteryINA219()) {
+            return sensor->getCurrentMa();
+        }
+#else
         if (nodeTelemetrySensorsMap[meshtastic_TelemetrySensorType_INA219].first == config.power.device_battery_ina_address) {
             return ina219Sensor.getCurrentMa();
-        } else if (nodeTelemetrySensorsMap[meshtastic_TelemetrySensorType_INA226].first ==
-                   config.power.device_battery_ina_address) {
+        }
+#endif
+        if (nodeTelemetrySensorsMap[meshtastic_TelemetrySensorType_INA226].first == config.power.device_battery_ina_address) {
             return ina226Sensor.getCurrentMa();
         } else if (nodeTelemetrySensorsMap[meshtastic_TelemetrySensorType_INA3221].first ==
                    config.power.device_battery_ina_address) {
@@ -589,12 +619,20 @@ class AnalogBatteryLevel : public HasBatteryLevel
         if (!config.power.device_battery_ina_address) {
             return false;
         }
+#if __has_include(<Adafruit_INA219.h>)
+        if (auto *sensor = getBatteryINA219()) {
+            if (!sensor->isInitialized())
+                return sensor->runOnce() > 0;
+            return sensor->isRunning();
+        }
+#else
         if (nodeTelemetrySensorsMap[meshtastic_TelemetrySensorType_INA219].first == config.power.device_battery_ina_address) {
             if (!ina219Sensor.isInitialized())
                 return ina219Sensor.runOnce() > 0;
             return ina219Sensor.isRunning();
-        } else if (nodeTelemetrySensorsMap[meshtastic_TelemetrySensorType_INA226].first ==
-                   config.power.device_battery_ina_address) {
+        }
+#endif
+        if (nodeTelemetrySensorsMap[meshtastic_TelemetrySensorType_INA226].first == config.power.device_battery_ina_address) {
             if (!ina226Sensor.isInitialized())
                 return ina226Sensor.runOnce() > 0;
             return ina226Sensor.isRunning();

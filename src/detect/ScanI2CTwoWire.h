@@ -7,6 +7,7 @@
 #include <memory>
 #include <stddef.h>
 #include <stdint.h>
+#include <vector>
 
 #include <Wire.h>
 
@@ -22,6 +23,8 @@ class ScanI2CTwoWire : public ScanI2C
     void scanPort(ScanI2C::I2CPort, uint8_t *, uint8_t) override;
 
     ScanI2C::FoundDevice find(ScanI2C::DeviceType) const override;
+
+    std::vector<ScanI2C::FoundDevice> findAll(ScanI2C::DeviceType) const override;
 
     bool exists(ScanI2C::DeviceType) const override;
 

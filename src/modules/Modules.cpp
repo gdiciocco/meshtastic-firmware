@@ -71,6 +71,9 @@
 #if HAS_TELEMETRY && !MESHTASTIC_EXCLUDE_POWER_TELEMETRY
 #include "modules/Telemetry/PowerTelemetry.h"
 #endif
+#if defined(HAS_SOLAR_CHARGE_CONTROL) && HAS_SOLAR_CHARGE_CONTROL
+#include "modules/SolarChargeController.h"
+#endif
 #if !MESHTASTIC_EXCLUDE_GENERIC_THREAD_MODULE
 #include "modules/GenericThreadModule.h"
 #endif
@@ -198,6 +201,9 @@ void setupModules()
 #endif
 #if HAS_TELEMETRY
     new DeviceTelemetryModule();
+#endif
+#if defined(HAS_SOLAR_CHARGE_CONTROL) && HAS_SOLAR_CHARGE_CONTROL
+    new SolarChargeController();
 #endif
 #if HAS_TELEMETRY && HAS_SENSOR && !MESHTASTIC_EXCLUDE_ENVIRONMENTAL_SENSOR
     if (moduleConfig.has_telemetry &&

@@ -68,7 +68,11 @@ static void sdsEnter()
 static void lowBattSDSEnter()
 {
     LOG_POWERFSM("State: Lower batt SDS");
+#if defined(HAS_SOLAR_CHARGE_CONTROL) && HAS_SOLAR_CHARGE_CONTROL
+    doDeepSleep(UINT32_MAX, false, true, true);
+#else
     doDeepSleep(Default::getConfiguredOrDefaultMs(config.power.sds_secs), false, true);
+#endif
 }
 extern Power *power;
 

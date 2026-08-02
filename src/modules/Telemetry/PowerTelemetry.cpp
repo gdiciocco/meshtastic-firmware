@@ -70,6 +70,8 @@ int32_t PowerTelemetryModule::runOnce()
             // but we need to set the result to != UINT32_MAX to avoid it being disabled
             if (ina219Sensor.hasSensor())
                 result = ina219Sensor.isInitialized() ? 0 : ina219Sensor.runOnce();
+            if (ina219Sensor2.hasSensor())
+                result = ina219Sensor2.isInitialized() ? 0 : ina219Sensor2.runOnce();
             if (ina226Sensor.hasSensor())
                 result = ina226Sensor.isInitialized() ? 0 : ina226Sensor.runOnce();
             if (ina260Sensor.hasSensor())
@@ -206,6 +208,8 @@ bool PowerTelemetryModule::getPowerTelemetry(meshtastic_Telemetry *m)
 #if HAS_TELEMETRY
     if (ina219Sensor.hasSensor())
         valid = ina219Sensor.getMetrics(m);
+    if (ina219Sensor2.hasSensor())
+        valid = ina219Sensor2.getMetrics(m) || valid;
     if (ina226Sensor.hasSensor())
         valid = ina226Sensor.getMetrics(m);
     if (ina260Sensor.hasSensor())

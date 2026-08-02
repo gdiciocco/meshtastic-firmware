@@ -29,6 +29,20 @@ ScanI2C::FoundDevice ScanI2CTwoWire::find(ScanI2C::DeviceType type) const
     return exists(type) ? ScanI2C::FoundDevice(type, deviceAddresses.at(type)) : DEVICE_NONE;
 }
 
+std::vector<ScanI2C::FoundDevice> ScanI2CTwoWire::findAll(ScanI2C::DeviceType type) const
+{
+    concurrency::LockGuard guard((concurrency::Lock *)&lock);
+    std::vector<ScanI2C::FoundDevice> devices;
+
+    for (const auto &found : foundDevices) {
+        if (found.second == type) {
+            devices.emplace_back(type, found.first);
+        }
+    }
+
+    return devices;
+}
+
 bool ScanI2CTwoWire::exists(ScanI2C::DeviceType type) const
 {
     return deviceAddresses.find(type) != deviceAddresses.end();
@@ -429,11 +443,6 @@ void ScanI2CTwoWire::scanPort(I2CPort port, uint8_t *address, uint8_t asize)
                         logFoundDevice("INA260", (uint8_t)addr.address);
                         type = INA260;
                     }
-#if HAS_TELEMETRY && !MESHTASTIC_EXCLUDE_ENVIRONMENTAL_SENSOR
-                } else if (detectSHT21SerialNumber(i2cBus, (uint8_t)addr.address)) {
-                    logFoundDevice("SHTXX (SHT2X)", (uint8_t)addr.address);
-                    type = SHTXX;
-#endif
                 } else { // Assume INA219 if none of the above ones are found
                     logFoundDevice("INA219", (uint8_t)addr.address);
                     type = INA219;
@@ -495,19 +504,6 @@ void ScanI2CTwoWire::scanPort(I2CPort port, uint8_t *address, uint8_t asize)
                     }
                     break;
                 }
-            case SHTXX_ADDR:     // same as OPT3001_ADDR_ALT
-            case SHTXX_ADDR_ALT: // same as OPT3001_ADDR
-                if (getRegisterValue(ScanI2CTwoWire::RegisterLocation(addr, 0x7E), 2) == 0x5449) {
-                    type = OPT3001;
-                    logFoundDevice("OPT3001", (uint8_t)addr.address);
-                } else { // SHTXX
-                    type = SHTXX;
-                    logFoundDevice("SHTXX", (uint8_t)addr.address);
-                }
-
-                break;
-
-                SCAN_SIMPLE_CASE(SHTC3_ADDR, SHTXX, "SHTXX", (uint8_t)addr.address)
             case RCWL9620_ADDR:
                 // get MAX30102 PARTID
                 registerValue = getRegisterValue(ScanI2CTwoWire::RegisterLocation(addr, 0xFF), 1);

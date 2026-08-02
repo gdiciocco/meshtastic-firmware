@@ -32,6 +32,9 @@
 esp_sleep_source_t wakeCause; // the reason we booted this time
 #endif
 #include "Throttle.h"
+#if defined(HAS_SOLAR_CHARGE_CONTROL) && HAS_SOLAR_CHARGE_CONTROL
+#include "modules/SolarChargeController.h"
+#endif
 
 #ifdef USE_XL9555
 #include "ExtensionIOXL9555.hpp"
@@ -206,7 +209,7 @@ static void waitEnterSleep(bool skipPreflight = false)
     setBluetoothEnable(false); // has to be off before calling light sleep
 }
 
-void doDeepSleep(uint32_t msecToWake, bool skipPreflight = false, bool skipSaveNodeDb = false)
+void doDeepSleep(uint32_t msecToWake, bool skipPreflight, bool skipSaveNodeDb, bool emergencySolarCharge)
 {
     if (INCLUDE_vTaskSuspend && (msecToWake == portMAX_DELAY)) {
         LOG_INFO("Enter deep sleep forever");
@@ -363,6 +366,10 @@ void doDeepSleep(uint32_t msecToWake, bool skipPreflight = false, bool skipSaveN
     Wire.end();
     pinMode(I2C_SDA, ANALOG);
     pinMode(I2C_SCL, ANALOG);
+#endif
+
+#if defined(HAS_SOLAR_CHARGE_CONTROL) && HAS_SOLAR_CHARGE_CONTROL
+    solarChargePrepareDeepSleep(emergencySolarCharge);
 #endif
 
     console->flush();

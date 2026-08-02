@@ -32,6 +32,9 @@ const uint32_t g_ADigitalPinMap[] = {
 
 void initVariant()
 {
+    digitalWrite(SOLAR_CHARGE_CONTROL_PIN, SOLAR_CHARGE_CONTROL_OFF);
+    pinMode(SOLAR_CHARGE_CONTROL_PIN, OUTPUT);
+
     // 3V3 Power Rail
     pinMode(PIN_3V3_EN, OUTPUT);
     digitalWrite(PIN_3V3_EN, HIGH);

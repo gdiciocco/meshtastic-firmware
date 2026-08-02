@@ -2,6 +2,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <vector>
 
 class ScanI2C
 {
@@ -156,6 +157,8 @@ class ScanI2C
     FoundDevice firstRGBLED() const;
 
     virtual FoundDevice find(DeviceType) const;
+
+    virtual std::vector<FoundDevice> findAll(DeviceType) const;
 
     virtual bool exists(DeviceType) const;
 

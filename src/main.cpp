@@ -689,7 +689,21 @@ void setup()
 
     scannerToSensorsMap(i2cScanner, ScanI2C::DeviceType::INA260, meshtastic_TelemetrySensorType_INA260);
     scannerToSensorsMap(i2cScanner, ScanI2C::DeviceType::INA226, meshtastic_TelemetrySensorType_INA226);
-    scannerToSensorsMap(i2cScanner, ScanI2C::DeviceType::INA219, meshtastic_TelemetrySensorType_INA219);
+    auto ina219Devices = i2cScanner->findAll(ScanI2C::DeviceType::INA219);
+    if (!ina219Devices.empty()) {
+        const auto &primary = ina219Devices[0].address;
+        nodeTelemetrySensorsMap[meshtastic_TelemetrySensorType_INA219] = {primary.address, i2cScanner->fetchI2CBus(primary)};
+#if HAS_TELEMETRY && !MESHTASTIC_EXCLUDE_ENVIRONMENTAL_SENSOR && __has_include(<Adafruit_INA219.h>)
+        ina219Sensor.configure(primary.address, i2cScanner->fetchI2CBus(primary));
+        if (ina219Devices.size() > 1) {
+            const auto &secondary = ina219Devices[1].address;
+            ina219Sensor2.configure(secondary.address, i2cScanner->fetchI2CBus(secondary));
+        }
+#endif
+        if (ina219Devices.size() > 2) {
+            LOG_WARN("Only the first two INA219 sensors are supported");
+        }
+    }
     scannerToSensorsMap(i2cScanner, ScanI2C::DeviceType::INA3221, meshtastic_TelemetrySensorType_INA3221);
     scannerToSensorsMap(i2cScanner, ScanI2C::DeviceType::MAX17048, meshtastic_TelemetrySensorType_MAX17048);
     scannerToSensorsMap(i2cScanner, ScanI2C::DeviceType::QMC6310U, meshtastic_TelemetrySensorType_QMC6310);
