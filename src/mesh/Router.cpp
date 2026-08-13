@@ -782,10 +782,18 @@ void Router::handleReceived(meshtastic_MeshPacket *p, RxSource src)
 
         bool shouldIgnoreNonstandardPorts =
             config.device.rebroadcast_mode == meshtastic_Config_DeviceConfig_RebroadcastMode_CORE_PORTNUMS_ONLY;
+        // NeighborInfo is not a core portnum, but carrying it is already opt-in: the check above drops it unless
+        // this node runs the module itself. A node that deliberately enabled NeighborInfo has accepted that
+        // traffic, so let it relay and uplink it too rather than black-holing it for the rest of the mesh.
+        bool neighborInfoOptIn = moduleConfig.has_neighbor_info && moduleConfig.neighbor_info.enabled &&
+                                 p->which_payload_variant == meshtastic_MeshPacket_decoded_tag &&
+                                 p->decoded.portnum == meshtastic_PortNum_NEIGHBORINFO_APP;
 #if USERPREFS_EVENT_MODE
         shouldIgnoreNonstandardPorts = true;
+        neighborInfoOptIn = false; // event mode keeps the lockdown absolute
 #endif
-        if (shouldIgnoreNonstandardPorts && p->which_payload_variant == meshtastic_MeshPacket_decoded_tag &&
+        if (shouldIgnoreNonstandardPorts && !neighborInfoOptIn &&
+            p->which_payload_variant == meshtastic_MeshPacket_decoded_tag &&
             !IS_ONE_OF(p->decoded.portnum, meshtastic_PortNum_TEXT_MESSAGE_APP, meshtastic_PortNum_TEXT_MESSAGE_COMPRESSED_APP,
                        meshtastic_PortNum_POSITION_APP, meshtastic_PortNum_NODEINFO_APP, meshtastic_PortNum_ROUTING_APP,
                        meshtastic_PortNum_TELEMETRY_APP, meshtastic_PortNum_ADMIN_APP, meshtastic_PortNum_ALERT_APP,
