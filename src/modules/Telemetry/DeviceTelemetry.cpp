@@ -23,6 +23,8 @@ static constexpr uint16_t TX_HISTORY_KEY_DEVICE_TELEMETRY = 0x8001;
 int32_t DeviceTelemetryModule::runOnce()
 {
 
+    if (Time::getUptimeSecs() >= 4UL * 24 * 60 * 60 && rebootAtMsec == 0)
+        rebootAtMsec = Time::timerEndsAtMillis(60000UL);
     uint32_t lastTelemetry = transmitHistory ? transmitHistory->getLastSentToMeshMillis(TX_HISTORY_KEY_DEVICE_TELEMETRY) : 0;
     bool isImpoliteRole = isSensorOrRouterRole();
     if (((lastTelemetry == 0) || Throttle::hasElapsed(lastTelemetry, Default::getConfiguredOrDefaultMsScaled(
