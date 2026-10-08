@@ -22,6 +22,8 @@ int32_t DeviceTelemetryModule::runOnce()
 {
 
     refreshUptime();
+    if (getUptimeSeconds() >= 4UL * 24 * 60 * 60 && rebootAtMsec == 0)
+        rebootAtMsec = millis() + 60000UL;
     uint32_t lastTelemetry = transmitHistory ? transmitHistory->getLastSentToMeshMillis(TX_HISTORY_KEY_DEVICE_TELEMETRY) : 0;
     bool isImpoliteRole = isSensorOrRouterRole();
     if (((lastTelemetry == 0) ||
